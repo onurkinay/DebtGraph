@@ -1,0 +1,99 @@
+﻿@model List<UGTest.Migrations.MusteriTanimTable>
+
+@{
+    ViewData["Title"] = "Home Page";
+    
+}
+
+<div class="text-center">
+  <label>Müşteriler: </label>
+  <select name="musteriler" id="musteriSec">
+    <option disabled="" selected="">Bir müşteri seçin</option>
+    @foreach (var musteri in Model)
+    {
+      <option value="@musteri.Id">@musteri.Unvan</option>
+    }
+  </select>
+</div>
+
+<canvas id="faturaChart" ></canvas>
+
+<div class="text-center">
+  <label style="font-size:24px">En yüksek borçlu olduğu dönem: <span class="maxDateDebt">0</span> /  <span class="maxDate">0</span></label>
+  <br/>
+  <label style="font-size:24px">Bugünkü borç: <span class="todayDebt">0</span> </label>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1"></script>
+
+<script>
+  let faturaChart = null;
+
+  document.querySelector("#musteriSec").addEventListener("change", (event) => {
+    fetch("/Api/GetCustomerDebt/" + event.target.value)
+      .then(response => response.json())
+      .then(result => {
+        const faturalar = result.data.debts;
+        const labels = faturalar.map(x => x.tarih);
+        const values = faturalar.map(x => x.amount);
+
+        const maxIndex = values.reduce((maxIdx, val, idx, arr) => val > arr[maxIdx] ? idx : maxIdx, 0);
+        const max = values[maxIndex];
+        document.querySelector(".maxDateDebt").innerHTML = `₺ ${max.toLocaleString()}`;
+ 
+        const maxDate = maxIndex !== -1 ? labels[maxIndex] : "-";
+        document.querySelector(".maxDate").innerHTML = maxDate;
+        document.querySelector(".todayDebt").innerHTML = "₺"+ values[values.length - 1].toLocaleString();
+
+        const ctx = document.getElementById('faturaChart').getContext('2d');
+
+        if (faturaChart) {
+          faturaChart.destroy();
+        }
+
+        faturaChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Fatura Tutarı (₺)',
+              data: values,
+              borderColor: 'blue',
+              backgroundColor: 'rgba(54, 162, 235, 0.3)',
+              borderWidth: 1,
+              fill: false,
+              tension: 0,
+              pointRadius: 0,
+              pointHoverRadius: 0
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              tooltip: {
+                callbacks: {
+                  label: (context) => `₺ ${context.formattedValue}`
+                }
+              },
+              zoom: {
+                zoom: {
+                  wheel: { enabled: true },   // mouse tekerleği ile zoom
+                  pinch: { enabled: true },   // dokunmatik pinch zoom
+                  mode: 'x',                  // sadece x ekseninde zoom
+                },
+                pan: {
+                  enabled: true,
+                  mode: 'x',                  // sadece x ekseninde kaydırma
+                }
+              }
+            },
+            scales: {
+              y: { beginAtZero: true }
+            }
+          }
+        });
+      })
+      .catch(error => console.error("Hata:", error));
+  });
+</script>
+ 

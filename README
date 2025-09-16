@@ -1,0 +1,20 @@
+UG Yazılım Projesi Değerlendirme Çalışması
+
+Kullanılan Teknolojiler:
+    .NET 9 / C# / ASP.NET MVC / MSSQL / JavaScript
+
+Görev:
+    Müşteri faturaları ve ödeme bilgilerinden hareketle, müşterinin hangi tarihte en yüksek borç bakiyesine ulaştığının tespit edilmesi.
+
+Erişim:
+    http://localhost:5125 -> Müşterileri listeler ve seçilen müşterinin borç seyrini grafik üzerinden gösterilir 
+
+SQL:
+    MSSQL kullanılmış olup buna göre yeniden yazılan SQL dosyaları SQL klasörün içerisindedir
+
+Yolları:
+    /Api/GetAllCustomers -> Tüm müşterilerin verilerini çeker
+    /Api/GetAllCustomerInvoices/{id} -> İlgili müşterinin faturalarını döndürür
+    /Api/GetCustomerDebt/{id} -> İlgili müşterilerin zaman ekseninde borç seyrini döndürür
+    
+ONUR KINAY
