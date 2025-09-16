@@ -52,8 +52,5 @@ DebtGraph is a .NET 9.0 web application for managing and visualizing customer de
 ## Configuration
 - Edit `appsettings.json` or `appsettings.Development.json` to configure the database connection string and other settings.
 
-## License
-Specify your license here.
-
 ## Contact
 For questions or support, contact the project maintainer.
